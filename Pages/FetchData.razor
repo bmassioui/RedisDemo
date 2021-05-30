@@ -1,0 +1,92 @@
+﻿@page "/fetchdata"
+
+@using RedisDemo.Data
+@using RedisDemo.Extensions
+@using System.Diagnostics
+@inject WeatherForecastService ForecastService
+@inject IDistributedCache cache
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+<button class="btn btn-primary" @onclick="LoadForecasts">
+    <span class="oi oi-reload"></span>
+    Load Forecasts
+</button>
+@if (forecasts is null && loadLocation == "")
+{
+    <p class="mt-2"><em>Please, click the button to load the forecasts.</em></p>
+}
+else if (forecasts is null)
+{
+    <p class="mt-2"><em><b>Loading forecasts ...</b></em></p>
+}
+else
+{
+    <div class="h3 alert alert-primary mt-2">
+        @loadLocation
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private WeatherForecast[] forecasts;
+    private string loadLocation = "";
+
+    private async Task LoadForecasts()
+    {
+        forecasts = null;
+        loadLocation = null;
+        var stopWatch = new Stopwatch();
+        string elapsedTime = string.Empty;
+
+        string recordKey = "WeatherForcasts_" + DateTime.Now.ToString("yyyyMMdd_hhmm");
+
+        stopWatch.Start();
+        // Try to restore data from cache
+        forecasts = await cache.GetRecordAsync<WeatherForecast[]>(recordKey);
+        stopWatch.Stop();
+
+        if (forecasts != null)
+        {
+            elapsedTime = String.Format("{0:00}H:{1:00}m:{2:00}s.{3:00}ms", stopWatch.Elapsed.Hours,
+            stopWatch.Elapsed.Minutes, stopWatch.Elapsed.Seconds, stopWatch.Elapsed.Milliseconds);
+            loadLocation = $"Data has been loaded from Redis Cache, Elapsed time {elapsedTime}";
+
+            return;
+        }
+
+        stopWatch.Start();
+        // Take data from API
+        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+        stopWatch.Stop();
+
+        elapsedTime = String.Format("{0:00}H:{1:00}m:{2:00}s.{3:00}ms", stopWatch.Elapsed.Hours,
+        stopWatch.Elapsed.Minutes, stopWatch.Elapsed.Seconds, stopWatch.Elapsed.Milliseconds);
+        loadLocation = $"Data has been loaded from API, Elapsed time {elapsedTime}";
+
+        // Store data into Redis Cache
+        await cache.SetRecordAsync<WeatherForecast[]>(recordKey, forecasts);
+    }
+}

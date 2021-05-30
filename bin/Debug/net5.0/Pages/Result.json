@@ -1,0 +1,32 @@
+[
+  {
+    "Date": "2021-05-31T16:16:09.9470777-07:00",
+    "TemperatureC": -4,
+    "TemperatureF": 25,
+    "Summary": "Balmy"
+  },
+  {
+    "Date": "2021-06-01T16:16:09.9470777-07:00",
+    "TemperatureC": -4,
+    "TemperatureF": 25,
+    "Summary": "Hot"
+  },
+  {
+    "Date": "2021-06-02T16:16:09.9470777-07:00",
+    "TemperatureC": 42,
+    "TemperatureF": 107,
+    "Summary": "Cool"
+  },
+  {
+    "Date": "2021-06-03T16:16:09.9470777-07:00",
+    "TemperatureC": 20,
+    "TemperatureF": 67,
+    "Summary": "Cool"
+  },
+  {
+    "Date": "2021-06-04T16:16:09.9470777-07:00",
+    "TemperatureC": 36,
+    "TemperatureF": 96,
+    "Summary": "Chilly"
+  }
+]
