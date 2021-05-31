@@ -1,2 +1,8 @@
 # RedisDemo
-Using Redis for DotNetCore 5.0
+DotNet core application using Redis as in-memory database in order to store and Load data.
+Take a loock and see how in-memory database is truly fast then the first load from API.
+
+
+
+
+
